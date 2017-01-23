@@ -1,3 +1,7 @@
+#add drop file
+*.csv
+ 
+
 # History files
 .Rhistory
 .Rapp.history

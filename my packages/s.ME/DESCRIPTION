@@ -1,0 +1,9 @@
+Package: s.ME
+Title: evaluation the model
+Description: evaluation the model
+Version: 1.0
+Author: Changlve She <snakepointid@sina.cn>
+Depends:R (>= 3.0.2),xgboost,Matrix,parallel,AUC
+License: Bai Rong
+LazyData: true
+RoxygenNote: 5.0.1

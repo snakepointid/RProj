@@ -1,0 +1,102 @@
+df<-p2p.model
+#############################################按iv值进行筛选
+useful<-iv_sig_filter(df,"spearman",cor.rate=0.7,iv.level=0.02,sig.level=0.05)
+########################################
+IV_sig_FS<-list()
+IV_sig_FS[[1]]<-useful
+for(i in 2:20){
+  temp<-IV_sig_FS[[i-1]]
+  IV_sig_FS[[i]]<-variable_select_bw(para_C50,p2p.model,temp,0.003,controls.C50)[[1]]
+  paste("这是第",i,"次循环了")
+}
+IV_sig_FS_var<-IV_sig_FS[[20]]
+########################################df<-p2p.model
+#############################################按iv值进行筛选
+useful<-iv_ks_filter(df,"spearman",cor.rate=0.7,iv.level=0.02,ks.level=0.06)
+########################################
+IV_ks_FS<-list()
+IV_ks_FS[[1]]<-useful
+for(i in 2:20){
+  temp<-IV_ks_FS[[i-1]]
+  IV_ks_FS[[i]]<-variable_select_bw(para_C50,p2p.model,temp,0.003,controls.C50)[[1]]
+  paste("这是第",i,"次循环了")
+}
+IV_ks_FS_var<-IV_ks_FS[[20]]
+########################################
+names(p2p)
+###############################################
+df<-p2p.model
+rpart<-rpart(def~.,data=df,control=controls.rpart)
+useful<-names(rpart$variable.importance)
+########################################
+Rpart_FS<-list()
+Rpart_FS[[1]]<-useful
+for(i in 2:20){
+  temp<-Rpart_FS[[i-1]]
+  Rpart_FS[[i]]<-variable_select_bw(para_C50,p2p.model,temp,0.003,controls.C50)[[1]]
+  paste("这是第",i,"次循环了")
+}
+Rpart_FS_var<-Rpart_FS[[20]]
+#######################################################################################
+df<-p2p.model
+set.seed(123)
+library(Boruta)
+boruta<-Boruta(def~.,data=df,doTrace = 2, ntree = 300)
+useful<-getSelectedAttributes(boruta)
+########################################
+Boruta_FS<-list()
+Boruta_FS[[1]]<-useful
+for(i in 2:20){
+  temp<-Boruta_FS[[i-1]]
+  Boruta_FS[[i]]<-variable_select_bw(para_C50,p2p.model,temp,0.003,controls.C50)[[1]]
+  paste("这是第",i,"次循环了")
+}
+Boruta_FS_var<-Boruta_FS[[20]]
+########################################
+df<-p2p.model
+iv<-get_var_info(df,names(df),"def",get_IV)
+temp<-names(iv[iv>0.02])
+###################################################C50内嵌重要度
+set.seed(123)
+library(C50)
+while(3>2){
+  boost<-C5.0(def~.,data=df[,c(temp,"def")],trials=100,control=controls.C50)
+  varimp<-C5imp(boost)
+  temp<-row.names(varimp)[varimp>99]
+  if(length(temp)<70){break}
+}
+useful<-temp
+########################################
+C50_FS<-list()
+C50_FS[[1]]<-useful
+for(i in 2:20){
+  temp<-C50_FS[[i-1]]
+  C50_FS[[i]]<-variable_select_bw(para_C50,p2p.model,temp,0.003,controls.C50)[[1]]
+  paste("这是第",i,"次循环了")
+}
+C50_FS_var<-C50_FS[[20]]
+########################################
+df<-p2p.model
+useful<-variable_select_ga(df,names(df))
+########################################
+GA_FS<-list()
+GA_FS[[1]]<-useful
+for(i in 2:20){
+  temp<-GA_FS[[i-1]]
+  GA_FS[[i]]<-variable_select_bw(para_C50,p2p.model,temp,0.003,controls.C50)[[1]]
+  paste("这是第",i,"次循环了")
+}
+GA_FS_var<-GA_FS[[20]]
+########################################
+df<-p2p.model
+useful<-variable_select_rs(df,100)
+########################################
+RS_FS<-list()
+RS_FS[[1]]<-useful
+for(i in 2:20){
+  temp<-RS_FS[[i-1]]
+  RS_FS[[i]]<-variable_select_bw(para_C50,p2p.model,temp,0.003,controls.C50)[[1]]
+  paste("这是第",i,"次循环了")
+}
+RS_FS_var<-RS_FS[[20]]
+########################################
