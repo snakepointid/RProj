@@ -1,6 +1,10 @@
 #add drop file
 *.csv
- 
+*.zip
+*.tar
+*.xlsx
+*.doc
+*.docx
 
 # History files
 .Rhistory
