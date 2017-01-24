@@ -1,13 +1,10 @@
-#' get a variables' distinct values matrix
+#' train the tree
 #'
-#' get a variables' distinct values matrix. this function is typically used to determine 
-#' those discrete variables whose distinct values' number is more than a threshold
-#'
-#' @param df the dataframe
-#' @param var.list the variables to be show,default: all variables
+#' @param x the dataframe
+#' @param y the target variable
 #' @export
 #' @examples
-#' count_distinct_value(p2p)
+#' streeTrain(x,y,maxdepth=3,minisamp=30)
 
 streeTrain<-function(x,y,maxdepth=3,minisamp=30)
 {
@@ -17,17 +14,16 @@ streeTrain<-function(x,y,maxdepth=3,minisamp=30)
   splitTheNode(x,y,yidx,'0')
   return(nodes)
 }
-#' define the columns' data type
+#' split the dataframe and get the node
 #'
-#' This function define the variable's data type by variable's distinct values' numbers
+#' This function is mainly split the dataframe and get the node
 #'
-#' @param df the dataframe
-#' @param vars those variables whose distinct values' numbers is more than a threshold but still need to be discrete type a the maxmimum distinct values' numbers that a discrete variable could have
-#' @param type_fun choose type
+#' @param x the dataframe
+#' @param y the target variable
+#' @param yidx the index of the target variable y
 #' @export 
 #' @examples
-#' dis.list<-"auth_key_relation"
-#' define_types(p2p,as.character,3)
+#' splitTheNode(x,y,idx,'0')
 splitTheNode<-function(x,y,yidx,code)
 {
   if(nchar(code)>maxdepth|length(unique(y))==1|length(y)<minisamp)
@@ -46,17 +42,14 @@ splitTheNode<-function(x,y,yidx,code)
     splitTheNode(x[rightidx,],y[rightidx],yidx[rightidx],paste(code,'1',sep=''))
   }
 }
-#' seperate the variables into discrete and numeric groups
+#' choose the random feature to split and get the optimal segmentation point 
 #'
-#' seperate the variables into discrete and numeric groups
-#'
-#' @param df the dataframe
-#' @param targ the label variable
+#' this function mainly choose the random feature to split and get the optimal segmentation point 
+#' @param prob the feature which is choosed randomly
+#' @param target the target variable
 #' @export
 #' @examples
-#' temp<-get_types(p2p,"def")
-#' dis.vars<-temp[["dis"]]
-#' con.vars<-temp[["con"]]
+#' split(prob,target)
 split <- function(prob,target)
 {
   idx <- order(prob)
@@ -66,16 +59,16 @@ split <- function(prob,target)
   midx <- which.max(ks)
   return(c(ks[midx],prob[midx]))
 }
-#' define the columns' data type accoding to predefined types doc
+#' predict the target y value  
 #'
-#' This function define the columns' data type accoding to predefined doc
+#' This function mainly predict the target y value 
 #'
-#' @param df the dataframe
-#' @param pre.types predefined types doc
+#' @param x the dataframe
+#' @param snakeTree the nodes which is from the above 
 #' @export 
 #' @examples
 #' 
-#' define_types_by_predoc(p2p,pre.types)
+#' predict(x,snakeTree)
 predict<-function(x,snakeTree)
 {
   obs<-length(x[,1])
@@ -85,20 +78,19 @@ predict<-function(x,snakeTree)
   predictY(x,yidx,'0')
   return(ypred)
 }
-#' define the columns' data type accoding to predefined types doc
+#' predict the y in each node 
 #'
-#' This function define the columns' data type accoding to predefined doc
+#' This function mainly predict the y value in each node 
 #'
-#' @param df the dataframe
-#' @param pre.types predefined types doc
+#' @param x the dataframe
+#' @param yidx the index of the target variable 
 #' @export 
 #' @examples
 #' 
-#' define_types_by_predoc(p2p,pre.types)
+#' predictY(x,yidx,code)
 predictY<-function(x,yidx,code)
 {
   node<-nodes[[code]]
-  
   if(node[1]==0)
   {
     ypred[yidx] <<- node[2]
