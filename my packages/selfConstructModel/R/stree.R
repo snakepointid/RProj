@@ -8,6 +8,8 @@
 
 streeTrain<-function(x,y,maxdepth=3,minisamp=30)
 {
+  maxdepth<<-maxdepth
+  minisamp<<-minisamp
   yfit<-rep(0,length(y))
   yidx<-1:length(y)
   nodes<<-list()
