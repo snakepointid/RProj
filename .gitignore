@@ -1,5 +1,5 @@
 #add drop file
-*.csv
+ 
 *.zip
 *.tar
 *.xlsx
