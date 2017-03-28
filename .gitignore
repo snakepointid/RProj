@@ -1,5 +1,7 @@
 #add drop file
- 
+*.csv
+*.RData
+*.7z
 *.zip
 *.tar
 *.xlsx

@@ -116,5 +116,7 @@ setkey(productInfo,sku_id)
 finalDF<-productInfo[finalDF ]
 targProdList<-finalDF[sku_id%in%productInfo$sku_id,.(sku_id)]%>%unique()
 finalDF<-finalDF[sku_id!=-1,]
+subFinalDF<-finalDF[1:100000,]
 fwrite(finalDF,file = "/Users/snakepointid/Documents/project/RProj/my code/jdProj/save/finalDF.csv")
+fwrite(subFinalDF,file = "/Users/snakepointid/Documents/project/RProj/my code/jdProj/save/subFinalDF.csv")
 fwrite(targProdList,file = "/Users/snakepointid/Documents/project/RProj/my code/jdProj/save/targProdList.csv")
