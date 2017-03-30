@@ -1,0 +1,154 @@
+---
+title: "EDA of JD data"
+output:
+  word_document: default
+---
+```{r include=FALSE}
+load("C:/Users/Administrator.NBJXUEJUN-LI/Desktop/project/jdProj/Rdata/rep_0324_halffull.RData")
+library(dplyr)
+library(ggplot2)
+library(knitr)
+
+```
+
+
+#basic statistic of JD data
+```{r include=FALSE}
+JData_User$user_lv_cd<-JData_User$user_lv_cd%>%as.character%>%as.factor
+JData_User$sex<-JData_User$sex%>%as.character%>%as.factor
+JData_User$user_reg_dt<-JData_User$user_reg_dt%>%as.character%>%as.Date
+JData_User$age<-JData_User$age%>%as.character%>%as.factor
+
+```
+##user info
+###id unique
+```{r echo=FALSE}
+JData_User$user_id%>%length==JData_User$user_id%>%unique%>%length 
+```
+###data sample
+```{r echo=FALSE}
+JData_User%>%head%>%kable
+```
+
+###basic summary
+```{r echo=FALSE}
+JData_User%>%summary
+```
+###variable interactive plot
+```{r echo=FALSE}
+g <- ggplot(JData_User, aes(user_lv_cd))
+g + geom_bar(aes(fill =age), position = "fill")+facet_grid(sex~.,scales = 'free')
+g <- ggplot(JData_User, aes(sex))
+g + geom_bar(aes(fill =age), position = "fill")+facet_grid(user_lv_cd~.,scales = 'free')
+```
+
+ 
+ 
+##comments info
+```{r include=FALSE}
+JData_Comment$dt[JData_Comment$dt=="NULL"]<-NA
+JData_Comment$dt<-JData_Comment$dt%>%as.Date
+JData_Comment$has_bad_comment<-JData_Comment$has_bad_comment%>%as.character%>%as.factor
+JData_Comment$comment_num<-JData_Comment$comment_num%>%as.character%>%as.factor
+JData_Comment$bad_comment_rate<-JData_Comment$bad_comment_rate%>%as.numeric
+```
+###id unique
+```{r echo=FALSE}
+JData_Comment$sku_id%>%length==JData_Comment$sku_id%>%unique%>%length 
+```
+###data sample
+```{r echo=FALSE}
+JData_Comment%>%head%>%kable
+```
+
+###basic summary
+```{r echo=FALSE}
+JData_Comment%>%summary
+```
+###variable interactive plot
+```{r echo=FALSE}
+ggplot(JData_Comment, aes(bad_comment_rate, ..density.., colour = comment_num)) +geom_freqpoly(linetype=1,size=1)
+```
+
+
+##product info
+```{r include=FALSE}
+
+JData_Product$attr1<-JData_Product$attr1%>%as.character%>%as.factor
+JData_Product$attr2<-JData_Product$attr2%>%as.character%>%as.factor
+JData_Product$attr3<-JData_Product$attr3%>%as.character%>%as.factor
+JData_Product$cate<-JData_Product$cate%>%as.character%>%as.factor
+JData_Product$brand<-JData_Product$brand%>%as.character%>%as.factor
+JData_Product$popbrand<-JData_Product$brand%>%as.character
+JData_Product$popbrand[!JData_Product$popbrand%in%c("489","214","623","812","545","800")]<-"other"
+JData_Product$popbrand<-JData_Product$popbrand%>%as.factor
+```
+###id unique
+```{r echo=FALSE}
+JData_Product$sku_id%>%length==JData_Product$sku_id%>%unique%>%length 
+```
+###data sample
+```{r echo=FALSE}
+JData_Product%>%head%>%kable
+```
+
+###basic summary
+```{r echo=FALSE}
+JData_Product%>%summary
+```
+###variable interactive plot
+```{r echo=FALSE}
+g <- ggplot(JData_Product, aes(attr1))
+g + geom_bar(aes(fill =attr2), position = "fill")+facet_grid(attr3~.,scales = 'free')
+g <- ggplot(JData_Product, aes(attr2))
+g + geom_bar(aes(fill =attr3), position = "fill")+facet_grid(attr1~.,scales = 'free')
+g <- ggplot(JData_Product, aes(popbrand))
+g + geom_bar(aes(fill =attr2), position = "fill")+facet_grid(attr1~.,scales = 'free')
+
+```
+ 
+ 
+ 
+ 
+ 
+
+##act info
+```{r include=FALSE}
+typeTag<-c('浏览','加购','购物车删除','下单','关注','点击')
+names(typeTag)<-c(1:6)
+JData_Action_201603$type<-typeTag[JData_Action_201603$type]
+JData_Action_201603<-JData_Action_201603%>%unique
+JData_Action_201603$type<-JData_Action_201603$type%>%as.character%>%as.factor
+JData_Action_201603$cate<-JData_Action_201603$cate%>%as.character%>%as.factor
+JData_Action_201603$brand<-JData_Action_201603$brand%>%as.character%>%as.factor
+JData_Action_201603$model_id<-JData_Action_201603$model_id%>%as.character 
+JData_Action_201603$model_id[JData_Action_201603$model_id%>%is.na]<-"nothit"
+JData_Action_201603$model_id<-JData_Action_201603$model_id%>%as.factor
+JData_Action_201603$time<-JData_Action_201603$time%>%as.Date
+
+JData_Action_201603$popbrand<-JData_Action_201603$brand%>%as.character
+JData_Action_201603$popbrand[!JData_Action_201603$popbrand%in%c("489","640","693","800","545","885")]<-"other"
+JData_Action_201603$popbrand<-JData_Action_201603$popbrand%>%as.factor
+```
+ str(JData_Action_201603)
+###data sample
+```{r echo=FALSE}
+JData_Action_201603%>%head%>%kable
+```
+
+###basic summary
+```{r echo=FALSE}
+JData_Action_201603%>%summary
+```
+###variable interactive plot
+```{r echo=FALSE}
+g <- ggplot(JData_Action_201603, aes(type))
+g + geom_bar(aes(fill =cate), position = "fill") 
+g <- ggplot(JData_Action_201603, aes(type))
+g + geom_bar(aes(fill =popbrand), position = "fill") 
+g <- ggplot(JData_Action_201603, aes(cate))
+g + geom_bar(aes(fill =popbrand), position = "fill") 
+ 
+
+```
+ 
