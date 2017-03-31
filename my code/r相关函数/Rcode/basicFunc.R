@@ -41,3 +41,7 @@ getFeat<-function(df,timegapSeq,featname){
   }
   return(negdf)
 }
+typeCode<-function(type){
+  return(paste(table(c(1:6,type))-1,collapse="#"))
+}
+ 

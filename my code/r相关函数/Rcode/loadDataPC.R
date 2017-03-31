@@ -2,7 +2,7 @@ library(data.table)
 library(dplyr)
 #read date
 source('C:/Users/Administrator.NBJXUEJUN-LI/Desktop/project/RProj/my code/rÏà¹Øº¯Êý/Rcode/basicFunc.R')
-maxrows=3000000
+maxrows=-1
 act02<-fread('C:/Users/Administrator.NBJXUEJUN-LI/Desktop/project/RProj/my code/jdProj/rawdata/JData_Action_201602.csv',nrows = maxrows)
 act03<-fread('C:/Users/Administrator.NBJXUEJUN-LI/Desktop/project/RProj/my code/jdProj/rawdata/JData_Action_201603.csv',nrows = maxrows)
 act03_extra<-fread('C:/Users/Administrator.NBJXUEJUN-LI/Desktop/project/RProj/my code/jdProj/rawdata/JData_Action_201603_extra.csv',nrows = maxrows)
