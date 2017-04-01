@@ -1,6 +1,6 @@
 library(ggplot2)
 #plot analysis
-timeserialsDF<-actionInfo[type==4&cate==8,]
+timeserialsDF<-allActionInfo[type==4&cate==8,]
 
 timeserialsDF[,"time"]<-timeserialsDF$time%>%substr(.,1,10)%>%as.Date
 

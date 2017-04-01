@@ -2,21 +2,17 @@ library(data.table)
 library(dplyr)
 #read date
 
-maxrows=-1
+maxrows=300000
 act02<-fread('C:/Users/Administrator.NBJXUEJUN-LI/Desktop/project/RProj/my code/jdProj/rawdata/JData_Action_201602.csv',nrows = maxrows)
 act03<-fread('C:/Users/Administrator.NBJXUEJUN-LI/Desktop/project/RProj/my code/jdProj/rawdata/JData_Action_201603.csv',nrows = maxrows)
 act03_extra<-fread('C:/Users/Administrator.NBJXUEJUN-LI/Desktop/project/RProj/my code/jdProj/rawdata/JData_Action_201603_extra.csv',nrows = maxrows)
 act04<-fread('C:/Users/Administrator.NBJXUEJUN-LI/Desktop/project/RProj/my code/jdProj/rawdata/JData_Action_201604.csv',nrows = maxrows)
 productInfo<-fread('C:/Users/Administrator.NBJXUEJUN-LI/Desktop/project/RProj/my code/jdProj/rawdata/JData_Product.csv')
 #merge and delete
-allActionInfo<-rbind(act02,act03,act03_extra,act04)
+actionInfo<-rbind(act02,act03,act03_extra,act04)
 rm(act02,act03,act03_extra,act04)
 gc()
-#sample data
-samp<-sample(c(1:(allActionInfo$user_id%>%length)),10000000,F)
-sampPosi<-which(allActionInfo$cate==8&allActionInfo$type==4)
-samp<-c(samp,sampPosi)%>%unique
-actionInfo<-allActionInfo[samp,]
+ 
 #brand and modek_id top
 model_idMP<-(actionInfo[cate==8,]$model_id%>%table%>%sort(.,T)%>%names)[1:5]%>%as.integer%>%sort
 brandMP<-(actionInfo[cate==8,]$brand%>%table%>%sort(.,T)%>%names)[1:5]%>%as.integer%>%sort

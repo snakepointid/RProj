@@ -45,3 +45,29 @@ typeCode<-function(type){
   return(paste(table(c(1:6,type))-1,collapse="#"))
 }
  
+findNegUserItemPair<-function(buyedList,itemList,itemSelectProp,k){
+  samp<-sample(itemList,k,replace = F,prob = itemSelectProp)
+  samp<-samp[!samp%in%buyedList]
+  samp%>%return
+}
+
+findActMostItem<-function(items){
+  tb<-items%>%table
+  (tb%>%names)[which.max(tb)]%>%as.integer%>%return
+}
+ 
+findActMostItemBytime<-function(df,timegapSeq){
+  negdf<-df[,.(user_id)]%>%unique
+
+  for(timegaps in timegapSeq){
+    tmp<-df[timegap<=timegaps,]
+    if(tmp$user_id%>%length>0){
+      tmp<-tmp[,.(pop=findActMostItem(popitem)),.(user_id)]
+      names(tmp)<-c("user_id",paste("timegap",timegaps,"mostactitem",sep="_"))
+      setkey(negdf,user_id)
+      setkey(tmp,user_id)
+      negdf<-tmp[negdf]
+    } 
+  }
+  return(negdf)
+}

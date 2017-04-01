@@ -1,18 +1,20 @@
-buyedSku<-allActionInfo[cate==8&type==4,]$sku_id%>%unique
-userActionHistory<-allActionInfo[sku_id%in%buyedSku ,]
-userActionHistory<-userActionHistory[,1,.(user_id,sku_id,type)]
-ruleRejctUser<-allActionInfo[cate==8&type==4,]$user_id%>%unique
-
+PosiUserItemPair<-allActionInfo[type==4,.(user_id,sku_id)] 
+itemList<-PosiUserItemPair$sku_id 
+itemSelectProp<-itemList%>%table%>%prop.table() 
+itemList<-itemList%>%unique
  
-userActionHistory<-userActionHistory[,typeCode(type),.(user_id,sku_id)]
-sampNum<-length(userActionHistory$user_id)
-userActionHistory<-userActionHistory[sample(1:sampNum,sampNum,replace = F),]
-write.csv(userActionHistory,file = "C:/Users/Administrator.NBJXUEJUN-LI/Desktop/project/RProj/my code/jdProj/save/userActionHistory.csv",row.names = F)
+NegBuyedUserItemPair<-PosiUserItemPair[,.(sku_id=findNegUserItemPair(sku_id,itemList,itemSelectProp,100)),.(user_id)]
+for(i in c(1:4)){
+  PosiUserItemPair<-rbind(PosiUserItemPair,PosiUserItemPair)
+}
  
-predUser<-userActionHistory$user_id%>%unique
-predUser<-predUser[!predUser%in%ruleRejctUser]
-predDF<-data.table(user_id=predUser)
-predDF<-predDF[,buyedSku,.(user_id)]
-
-write.csv(predDF,file = "C:/Users/Administrator.NBJXUEJUN-LI/Desktop/project/RProj/my code/jdProj/save/predDF.csv",row.names = F)
-
+NegBuyedUserItemPair[,'label']<-0
+PosiUserItemPair[,'label']<-1
+UserItemPair<-rbind(NegBuyedUserItemPair,PosiUserItemPair)
+sampNum<-UserItemPair$user_id%>%length
+UserItemPair<-UserItemPair[sample(1:sampNum,sampNum,replace = F),]
+write.csv(UserItemPair,file = "C:/Users/Administrator.NBJXUEJUN-LI/Desktop/project/RProj/my code/jdProj/save/UserItemPair.csv",row.names = F)
+ 
+ 
+UserItemPair$label%>%table%>%prop.table
+ 
