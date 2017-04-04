@@ -1,4 +1,4 @@
-  #construct mapping
+#construct mapping
 #brand and modek_id top
 model_idMP<-c(-2,-1,   0  ,26  ,27, 216 ,217)
 brandMP   <-c(214,-1 ,306 ,403 ,489, 545, 800)

@@ -1,27 +1,24 @@
 library(xgboost)
 ## filter variables
 allvars<-alldata%>%names
-# useful <- rpart_filter(alldata,'Y',controls=tree.control)
-useful <- allvars[!allvars%in%c('label','user_id')]
-sampSamp<-c(1:length(alldata$user_id))
-train.samp <- sample(sampSamp,0.7*length(sampSamp))
-test.samp<-sampSamp[!sampSamp%in%train.samp]
+ 
+useful <- allvars[!allvars%in%c('label','user_id','targwindowday')]
  
 all.y<-alldata$label
-train.y    <- all.y[train.samp]
-test.y     <- all.y[test.samp]
-alldata<-alldata[,useful]%>%data.table
-preddata<-predictDF[,useful]%>%data.table
+ 
+predSamp<-which(all.y==-1)
+trainTestSamp<-which(all.y!=-1)
+
+train.samp <- sample(trainTestSamp,0.7*length(trainTestSamp),replace = F)
+test.samp  <-trainTestSamp[!trainTestSamp%in%train.samp]
 #----------------------------------------------------------------------------------------------------------------------#
 ##  get train and test datas
-traindata <- alldata[train.samp,]
-testdata  <- alldata[test.samp,]
-#----------------------------------------------------------------------------------------------------------------------#
-##  construct model
-####  filter those variables by using decision tree
-####  train the model by using xgboost
-#----------------------------------------------------------------------------------------------------------------------#
-
+traindata <- alldata[train.samp,useful]%>%data.table
+testdata  <- alldata[test.samp,useful]%>%data.table
+preddata<-alldata[predSamp,useful]%>%data.table
+ 
+train.y    <- all.y[train.samp]
+test.y     <- all.y[test.samp]
 #----------------------------------------------------------------------------------------------------------------------#
 ##  transfer the dataframe to the type xgboost need
 ###  trainset
@@ -43,7 +40,7 @@ hyperPara <-
     colsample_bytree = 0.5,
     min_child_weight = 100,
     subsample = 0.7,
-    eta = 0.01,
+    eta = 0.07,
     objective = "binary:logistic",
     nthread = 4,
     eval_metric = 'auc'
@@ -54,11 +51,18 @@ bst <-
   xgb.train(
     params = hyperPara,
     data = dtrain,
-    nround = 10000,
+    nround = 1000,
     verbose = 1,
     watchlist = list('train' = dtrain, 'validation' = dtest)
   )
-
+var.imp[1:100,]
 var.imp <- xgb.importance(useful, model = bst)
 score<-predict(bst,dpred)
+ 
+outfile<-data.table(user_id=alldata[predSamp,]$user_id,score)
+outfile<-outfile[score>0.5,]
+outfile<-outfile[,.(user_id,sku_id=score)]
+outfile[,"sku_id"]<-154636
+ 
+write.csv(outfile,"/Users/snakepointid/Documents/project/JDproj/result/result0404.csv",row.names = F,fileEncoding = "UTF-8")
  
