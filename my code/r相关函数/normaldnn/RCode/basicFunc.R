@@ -42,6 +42,4 @@ daysAction<-function(model_id,type,cate,brand){
           cate_all_prop)
   return(paste(feat,collapse = "#"))
 }
-    
 
- 

@@ -16,9 +16,10 @@ library(dplyr)
 # actionInfo<-actionInfo[samp,]
 # write.csv(actionInfo,'C:/Users/Administrator.NBJXUEJUN-LI/Desktop/project/RProj/my code/r相关函数/rawdatas/cleanActionData.csv', row.names = F)
 #read clean date
-maxrows<--1
+maxrows<-300000
 actionInfo<-fread('C:/Users/Administrator.NBJXUEJUN-LI/Desktop/project/RProj/my code/r相关函数/rawdatas/cleanActionData.csv',nrows = maxrows)
 userInfo <-fread('C:/Users/Administrator.NBJXUEJUN-LI/Desktop/project/RProj/my code/r相关函数/rawdatas/JData_User_clean.csv',nrows = -1)
+actionInfo[,'user_id']<-actionInfo$user_id%>%as.integer
 #load functions
 source('C:/Users/Administrator.NBJXUEJUN-LI/Desktop/project/RProj/my code/r相关函数/normaldnn/RCode/basicFunc.R')
 #data preprocess
