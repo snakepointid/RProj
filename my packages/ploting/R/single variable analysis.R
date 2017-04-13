@@ -107,20 +107,20 @@ single_catvar_analysis<-function(value,target,timestp,varname,ord=T,tcp=NULL,mis
     geom_point(aes(ods,aods,size = num,colour=num),data = pdf, alpha=0.5)
     print(p)
 }
-
+ 
 graph_analysis<-function(df,var.list,target){
   df<-df[!is.na(df[,target]),]
   default<-df[,target]%>%as.factor()
   for(i in var.list){
     vec<-df[,i]
-    gdf<-data.frame(vec,default)
-    if(is.factor(vec)){
-      print(ggplot(gdf,aes(vec,fill=default))+geom_bar()+xlab(i)+ylab("数量"))
-      print(ggplot(gdf,aes(vec,fill=default))+geom_bar(position ="fill")+xlab(i)+ylab("百分比"))
-    }else
-    {
-      print(ggplot(gdf,aes(log(vec),fill=default))+geom_histogram()+xlab(i)+ylab("数量"))
-      print(ggplot(gdf,aes(log(vec),fill=default))+geom_histogram(position ="fill")+xlab(i)+ylab("百分比"))
+    if(vec%>%unique%>%length<20){
+      vec<-vec%>%as.character%>%as.factor 
+    }else{
+      vec<-cut(vec,c(-Inf,Inf,quantile(vec,seq(0,1,0.1))))
     }
+    gdf<-data.frame(vec,default)
+    print(ggplot(gdf,aes(vec,fill=default))+geom_bar()+xlab(i)+ylab("数量"))
+    print(ggplot(gdf,aes(vec,fill=default))+geom_bar(position ="fill")+xlab(i)+ylab("百分比"))
+    
   }
 }
