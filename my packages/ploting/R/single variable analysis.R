@@ -107,20 +107,67 @@ single_catvar_analysis<-function(value,target,timestp,varname,ord=T,tcp=NULL,mis
     geom_point(aes(ods,aods,size = num,colour=num),data = pdf, alpha=0.5)
     print(p)
 }
- 
-graph_analysis<-function(df,var.list,target){
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  library(grid)
+  
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+  
+  numPlots = length(plots)
+  
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                     ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+  
+  if (numPlots==1) {
+    print(plots[[1]])
+    
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+    
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+      
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
+graph_analysis<-function(df,var.list,target,bins=10,df2=NULL){
   df<-df[!is.na(df[,target]),]
   default<-df[,target]%>%as.factor()
+  default2<-df2[,target]%>%as.factor()
   for(i in var.list){
+    name<-paste(i,'.png',sep='')
     vec<-df[,i]
-    if(vec%>%unique%>%length<20){
-      vec<-vec%>%as.character%>%as.factor 
-    }else{
-      vec<-cut(vec,c(-Inf,Inf,quantile(vec,seq(0,1,0.1))))
-    }
+    cutp<-c(-Inf,Inf,quantile(vec,seq(0,1,1/bins)))%>%unique
+    vec<-cut(vec,cutp)
     gdf<-data.frame(vec,default)
-    print(ggplot(gdf,aes(vec,fill=default))+geom_bar()+xlab(i)+ylab("数量"))
-    print(ggplot(gdf,aes(vec,fill=default))+geom_bar(position ="fill")+xlab(i)+ylab("百分比"))
-    
+    g11<-ggplot(gdf,aes(vec,fill=default))+geom_bar()+xlab(i)+ylab("数量")
+    g12<-ggplot(gdf,aes(vec,fill=default))+geom_bar(position ="fill")+xlab(i)+ylab("百分比")
+    if(!df2%>%is.null){
+      vec<-df2[,i]
+      vec<-cut(vec,cutp)
+      gdf<-data.frame(vec,default2)
+      g21<-ggplot(gdf,aes(vec,fill=default2))+geom_bar()+xlab(i)+ylab("数量")
+      g22<-ggplot(gdf,aes(vec,fill=default2))+geom_bar(position ="fill")+xlab(i)+ylab("百分比")
+      png(name)
+      multiplot(g11,g12,g21,g22,cols=2)
+      dev.off()
+    }else{
+      png(name)
+      multiplot(g11,g12,cols=2) 
+      dev.off()
+    }
+
   }
 }
